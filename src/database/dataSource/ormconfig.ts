@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { DataSourceOptions } from 'typeorm';
 
-import { DEV_SETTING, PROD_SETTING } from '@/constants/index';
+import { DEV_SETTING, PROD_SETTING } from '@constants/index';
 
 dotenv.config();
 
@@ -10,7 +10,7 @@ interface OrmconfigType {
   prod: DataSourceOptions;
 }
 
-const ormconfig: OrmconfigType = {
+export const ormconfig: OrmconfigType = {
   dev: {
     type: 'mysql',
     host: process.env.DEV_DB_HOST,
@@ -20,7 +20,7 @@ const ormconfig: OrmconfigType = {
     database: DEV_SETTING.db.database,
     synchronize: true,
     logging: true,
-    entities: ['src/database/entity/**/*.ts'],
+    entities: ['src/database/entities/**/*.ts'],
     migrations: ['src/database/migration/**/*.ts'],
     subscribers: ['src/database/subscriber/**/*.ts'],
   },
@@ -33,10 +33,8 @@ const ormconfig: OrmconfigType = {
     database: PROD_SETTING.db.database,
     synchronize: true,
     logging: false,
-    entities: ['src/database/entity/**/*.ts'],
+    entities: ['src/database/entities/**/*.ts'],
     migrations: ['src/database/migration/**/*.ts'],
     subscribers: ['src/database/subscriber/**/*.ts'],
   },
 };
-
-export default ormconfig;
