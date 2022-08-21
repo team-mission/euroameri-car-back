@@ -10,11 +10,12 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
-      "@/database/*": ["src/database/*"],
-      "@/routes/*": ["src/routes/*"],
-      "@/constants/*": ["src/constants/*"],
-      "@/errors/*": ["src/errors/*"],
-      "@/utils/*": ["src/utils/*"]
+      "@database/*": ["src/database/*"],
+      "@routes/*": ["src/routes/*"],
+      "@constants/*": ["src/constants/*"],
+      "@utils/*": ["src/utils/*"],
+      "@auth/*": ["src/auth/*"],
+      "@errors/*": ["src/errors/*"]
     }
   },
   "include": ["src/**/*.ts"],
