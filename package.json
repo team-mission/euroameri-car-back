@@ -1,0 +1,40 @@
+{
+  "name": "euroameri-car-back",
+  "version": "1.0.0",
+  "repository": "https://github.com/kanghyun98/euroameri-car-back.git",
+  "author": "kanghyun98 <lkh981107@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register --files ./src/index.ts"
+  },
+  "dependencies": {
+    "cors": "2.8.5",
+    "dotenv": "16.0.1",
+    "express": "4.18.1",
+    "helmet": "5.1.1",
+    "hpp": "0.2.3",
+    "morgan": "1.10.0",
+    "mysql2": "2.3.3",
+    "reflect-metadata": "0.1.13",
+    "typeorm": "0.3.7"
+  },
+  "devDependencies": {
+    "@types/cors": "2.8.12",
+    "@types/express": "4.17.13",
+    "@types/hpp": "0.2.2",
+    "@types/morgan": "1.9.3",
+    "@types/node": "18.7.8",
+    "@typescript-eslint/eslint-plugin": "5.33.1",
+    "@typescript-eslint/parser": "5.33.1",
+    "eslint": "8.22.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "nodemon": "2.0.19",
+    "prettier": "2.7.1",
+    "ts-node": "10.9.1",
+    "tsconfig-paths": "4.1.0",
+    "typescript": "4.7.4"
+  }
+}
