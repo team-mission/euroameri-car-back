@@ -13,6 +13,8 @@ import { DEV_SETTING, PROD_SETTING } from '@constants/index';
 import AppDataSource from '@database/dataSource';
 import configurePassport from '@auth/index';
 import adminRouter from '@routes/admin';
+import postsRouter from '@routes/posts';
+import postRouter from '@routes/post';
 import errorHandler, { notFoundErrorHandler } from '@errors/errorHandler';
 
 dotenv.config();
@@ -75,6 +77,8 @@ app.use(passport.session());
 
 // Routers
 app.use('/admin', adminRouter);
+app.use('/posts', postsRouter);
+app.use('/post', postRouter);
 
 // Check
 app.get('/', (req, res) => {

@@ -22,3 +22,13 @@ export const isNotLoggedIn = wrapAsync(
     next();
   },
 );
+
+export const checkUserType = wrapAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (req.isAuthenticated()) {
+      req.isAdmin = true;
+    }
+
+    next();
+  },
+);
