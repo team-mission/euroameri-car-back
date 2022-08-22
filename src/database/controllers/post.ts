@@ -22,28 +22,8 @@ export const getPostList = async (page: number, display: number) => {
   return postListData;
 };
 
-// 일반 게시물 정보 조회
-export const getNormalPost = async (postId: number) => {
-  const postData = await AppDataSource.getRepository(Post)
-    .createQueryBuilder('post')
-    .where('post.id = :postId', { postId })
-    .leftJoinAndSelect('post.images', 'images')
-    .getOne();
-
-  if (!postData) {
-    throw new BadRequestError('존재하지 않는 게시물에 대한 조회 요청');
-  }
-
-  if (postData?.secret) {
-    throw new UnauthorizedError('비밀 게시물에 대한 조회 요청입니다.');
-  }
-
-  // 일반글
-  return postData;
-};
-
-// 비밀 게시물 정보 조회
-export const getSecretPost = async (postId: number, password: string) => {
+// 게시물 정보 조회
+export const getPost = async (postId: number, password?: string) => {
   const postData = await AppDataSource.getRepository(Post)
     .createQueryBuilder('post')
     .select(['post', 'post.password'])
@@ -55,14 +35,16 @@ export const getSecretPost = async (postId: number, password: string) => {
     throw new BadRequestError('존재하지 않는 게시물에 대한 조회 요청');
   }
 
-  if (!password) {
-    throw new UnauthorizedError('비밀번호를 입력해야합니다.');
-  }
+  // 비밀글 처리
+  if (postData.secret) {
+    if (!password) {
+      throw new UnauthorizedError('비밀번호를 입력해야합니다.');
+    }
 
-  const result = await bcrypt.compare(password, postData.password);
-
-  if (!result) {
-    throw new UnauthorizedError('잘못된 비밀번호');
+    const result = await bcrypt.compare(password, postData.password);
+    if (!result) {
+      throw new UnauthorizedError('잘못된 비밀번호');
+    }
   }
 
   const { password: hashedPassword, ...filteredPostData } = postData;
@@ -194,7 +176,7 @@ export const getCommentList = async (postId: number) => {
 };
 
 // 댓글 작성 (관리자용)
-export const addComment = async (postId: number, content: string) => {
+export const addCommentForAdmin = async (postId: number, content: string) => {
   const post = new Post();
   post.id = postId;
 
@@ -212,7 +194,7 @@ export const addComment = async (postId: number, content: string) => {
 };
 
 // 댓글 삭제 (관리자용)
-export const deleteComment = async (postId: number, commId: number) => {
+export const deleteCommentForAdmin = async (postId: number, commId: number) => {
   const deleteCommentResult = await AppDataSource.getRepository(Comment)
     .createQueryBuilder('comment')
     .softDelete()

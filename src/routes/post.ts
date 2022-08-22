@@ -2,48 +2,23 @@ import express, { Request, Response } from 'express';
 
 import wrapAsync from '@utils/wrapAsync';
 import {
-  getNormalPost,
-  getSecretPost,
+  getPost,
   getPostForAdmin,
   addPost,
   deletePostForAdmin,
   deletePost,
   getCommentList,
-  addComment,
-  deleteComment,
+  addCommentForAdmin,
+  deleteCommentForAdmin,
 } from '@database/controllers/post';
 import { BadRequestError } from '@errors/customErrors';
 import { checkUserType, isLoggedIn } from './middleware';
 
 const router = express.Router();
 
-// 일반 게시물 정보 조회
+// 게시물 정보 조회
 router.post(
-  '/normal/:postId',
-  checkUserType,
-  wrapAsync(async (req: Request, res: Response) => {
-    const postId = Number(req.params.postId);
-
-    if (!postId) {
-      throw new BadRequestError('올바르지 않은 postId를 포함한 요청입니다.');
-    }
-
-    // 관리자
-    if (req.isAdmin) {
-      const postData = await getPostForAdmin(postId);
-      return res.json(postData);
-    }
-
-    // 유저
-    const postData = await getNormalPost(postId);
-
-    return res.json(postData);
-  }),
-);
-
-// 비밀 게시물 정보 조회
-router.post(
-  '/secret/:postId',
+  '/:postId',
   checkUserType,
   wrapAsync(async (req: Request, res: Response) => {
     const postId = Number(req.params.postId);
@@ -60,8 +35,7 @@ router.post(
     }
 
     // 유저
-    const postData = await getSecretPost(postId, password);
-
+    const postData = await getPost(postId, password);
     return res.json(postData);
   }),
 );
@@ -147,7 +121,7 @@ router.post(
       throw new BadRequestError('일부 정보가 누락된 요청입니다.');
     }
 
-    await addComment(postId, content);
+    await addCommentForAdmin(postId, content);
     res.end();
   }),
 );
@@ -168,7 +142,7 @@ router.delete(
       );
     }
 
-    await deleteComment(postId, commId);
+    await deleteCommentForAdmin(postId, commId);
     return res.end();
   }),
 );
