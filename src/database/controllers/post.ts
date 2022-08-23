@@ -14,12 +14,22 @@ import {
 export const getPostList = async (page: number, display: number) => {
   const postListData = await AppDataSource.getRepository(Post)
     .createQueryBuilder('post')
-    .orderBy('post.createdAt')
+    .select([
+      'post.id',
+      'post.createdAt',
+      'post.updatedAt',
+      'post.title',
+      'post.name',
+      'post.secret',
+    ])
+    .orderBy('post.createdAt', 'DESC')
     .offset((page - 1) * display)
     .limit(display)
     .getMany();
 
-  return postListData;
+  const count = await AppDataSource.getRepository(Post).count();
+
+  return { count, data: postListData };
 };
 
 // 게시물 정보 조회
@@ -47,8 +57,15 @@ export const getPost = async (postId: number, password?: string) => {
     }
   }
 
-  const { password: hashedPassword, ...filteredPostData } = postData;
-  return filteredPostData;
+  const { password: hashedPassword, images, ...filteredPostData } = postData;
+  const imageUrls = images.map((img) => img.src);
+
+  const result = {
+    ...filteredPostData,
+    images: imageUrls,
+  };
+
+  return result;
 };
 
 // 게시물 정보 조회 (관리자용)
@@ -64,7 +81,15 @@ export const getPostForAdmin = async (postId: number) => {
     throw new BadRequestError('존재하지 않는 게시물에 대한 조회 요청');
   }
 
-  return postData;
+  const { images, ...filteredPostData } = postData;
+  const imageUrls = images.map((img) => img.src);
+
+  const result = {
+    ...filteredPostData,
+    images: imageUrls,
+  };
+
+  return result;
 };
 
 // 게시물 작성
