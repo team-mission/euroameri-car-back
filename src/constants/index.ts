@@ -13,7 +13,7 @@ export const DEV_SETTING = {
 export const PROD_SETTING = {
   mode: 'prod',
   port: '4000',
-  clientURL: '', // TODO
+  clientURL: 'https://euroamericar.com',
 
   db: {
     port: '3306',
