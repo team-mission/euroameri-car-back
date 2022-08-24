@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import axios from 'axios';
 
 import wrapAsync from '@utils/wrapAsync';
 import {
@@ -44,11 +45,32 @@ router.post(
 router.post(
   '/',
   wrapAsync(async (req: Request, res: Response) => {
-    const { title, content, name, email, phone, images, secret, password } =
-      req.body;
+    const {
+      title,
+      content,
+      name,
+      email,
+      phone,
+      images,
+      secret,
+      password,
+      token,
+    } = req.body;
 
-    if (!title || !content || !name || !email || !phone || !images) {
+    if (!title || !content || !name || !email || !phone || !images || !token) {
       throw new BadRequestError('일부 정보가 누락된 요청입니다.');
+    }
+
+    // recaptcha 인증
+    const recaptchaResponse = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${token}&remoteip=${req.socket.remoteAddress}`,
+    );
+
+    if (
+      !recaptchaResponse.data.success ||
+      recaptchaResponse.data.score <= 0.7
+    ) {
+      throw new BadRequestError('Recaptcha 인증 실패');
     }
 
     const result = await addPost(
