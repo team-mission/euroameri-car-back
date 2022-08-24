@@ -194,7 +194,7 @@ export const getCommentList = async (postId: number) => {
   const commentListData = await AppDataSource.getRepository(Comment)
     .createQueryBuilder('comment')
     .where('comment.post_id = :postId', { postId })
-    .orderBy('comment.createdAt')
+    .orderBy('comment.createdAt', 'DESC')
     .getMany();
 
   return commentListData;
