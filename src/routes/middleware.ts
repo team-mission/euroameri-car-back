@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { UnauthorizedError } from '@errors/customErrors';
+import { UnauthorizedError, BadRequestError } from '@errors/customErrors';
 import wrapAsync from '@utils/wrapAsync';
 
 export const isLoggedIn = wrapAsync(
@@ -16,7 +16,7 @@ export const isLoggedIn = wrapAsync(
 export const isNotLoggedIn = wrapAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (req.isAuthenticated()) {
-      throw new UnauthorizedError('로그아웃이 필요한 요청입니다.');
+      throw new BadRequestError('로그아웃이 필요한 요청입니다.');
     }
 
     next();
