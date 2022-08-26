@@ -1,8 +1,7 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import passport from 'passport';
 
-import wrapAsync from '@utils/wrapAsync';
-import { UnauthorizedError } from '@errors/customErrors';
+import { BadRequestError } from '@errors/customErrors';
 import { isLoggedIn, isNotLoggedIn } from './middleware';
 
 const router = express.Router();
@@ -27,20 +26,18 @@ router.post('/login', isNotLoggedIn, async (req, res, next) => {
   })(req, res, next);
 });
 
-router.post(
-  '/logout',
-  isLoggedIn,
-  wrapAsync((req: Request, res: Response) => {
-    req.logout((err) => {
-      throw new UnauthorizedError(err);
-    });
-
-    req.session.destroy((err) => {
-      throw new UnauthorizedError(err);
-    });
-
-    res.end();
-  }),
-);
+router.post('/logout', isLoggedIn, (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      throw new BadRequestError(err);
+    }
+  });
+  req.session.destroy((err) => {
+    if (err) {
+      throw new BadRequestError(err);
+    }
+  });
+  res.send('ok');
+});
 
 export default router;
