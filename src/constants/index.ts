@@ -14,6 +14,7 @@ export const PROD_SETTING = {
   mode: 'prod',
   port: '4000',
   clientURL: 'https://euroamericar.com',
+  domain: '.euamserver.cafe24.com',
 
   db: {
     port: '3306',

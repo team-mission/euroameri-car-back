@@ -63,9 +63,12 @@ app.use(
     saveUninitialized: false,
     resave: false,
     secret: process.env.COOKIE_SECRET!,
+    proxy: true,
     cookie: {
       httpOnly: true,
       secure: isProdMode,
+      domain: isProdMode ? PROD_SETTING.domain : undefined,
+      sameSite: 'none',
     },
   }),
 );
