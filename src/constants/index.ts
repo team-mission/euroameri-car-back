@@ -17,7 +17,7 @@ export const PROD_SETTING = {
 
   db: {
     port: '3306',
-    database: 'euroameri-car',
+    database: 'euroamericar',
   },
   morganMode: 'combined',
 } as const;
