@@ -8,6 +8,7 @@
     "outDir": "./dist",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "skipLibCheck": true,
     "typeRoots": ["./src/types/index.d.ts", "./node_modules/@types"],
     "baseUrl": ".",
     "paths": {

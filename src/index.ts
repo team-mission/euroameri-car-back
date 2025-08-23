@@ -40,7 +40,7 @@ const app = express();
 
 // Security
 if (isProdMode) {
-  app.use(hpp());
+  app.use(hpp() as any);
   app.use(helmet());
   app.enable('trust proxy');
 }
@@ -61,7 +61,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Cookie & Session
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET) as any);
 app.use(
   session({
     saveUninitialized: false,
@@ -74,13 +74,13 @@ app.use(
       domain: isProdMode ? PROD_SETTING.domain : undefined,
       sameSite: 'none',
     },
-  }),
+  }) as any,
 );
 
 // Passport
 configurePassport();
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize() as any);
+app.use(passport.session() as any);
 
 // DB 연결 미들웨어
 app.use(async (req, res, next) => {
