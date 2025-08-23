@@ -12,29 +12,25 @@ interface OrmconfigType {
 
 export const ormconfig: OrmconfigType = {
   dev: {
-    type: 'mysql',
-    host: process.env.DEV_DB_HOST,
-    port: Number(DEV_SETTING.db.port),
-    username: process.env.DEV_DB_USERNAME,
-    password: process.env.DEV_DB_PASSWORD,
-    database: DEV_SETTING.db.database,
+    type: 'postgres',
+    url: process.env.DEV_DATABASE_URL,
     synchronize: true,
     logging: true,
     entities: ['src/database/entities/**/*.ts'],
     migrations: ['src/database/migration/**/*.ts'],
     subscribers: ['src/database/subscriber/**/*.ts'],
+    ssl: false,
   },
   prod: {
-    type: 'mysql',
-    host: process.env.DB_HOST,
-    port: Number(PROD_SETTING.db.port),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: PROD_SETTING.db.database,
-    synchronize: true,
+    type: 'postgres',
+    url: process.env.DATABASE_URL,
+    synchronize: false, // 프로덕션에서는 false로 설정
     logging: false,
-    entities: ['src/database/entities/**/*.ts'],
-    migrations: ['src/database/migration/**/*.ts'],
-    subscribers: ['src/database/subscriber/**/*.ts'],
+    entities: ['dist/database/entities/**/*.js'], // 빌드된 JS 파일 경로
+    migrations: ['dist/database/migration/**/*.js'],
+    subscribers: ['dist/database/subscriber/**/*.js'],
+    ssl: {
+      rejectUnauthorized: false, // Supabase SSL 연결을 위해 필요
+    },
   },
 };

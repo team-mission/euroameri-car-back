@@ -22,14 +22,18 @@ dotenv.config();
 const isProdMode: boolean = process.env.NODE_ENV === 'production';
 const REAL_SETTING = isProdMode ? PROD_SETTING : DEV_SETTING;
 
-// DB
-AppDataSource.initialize()
-  .then(() => {
-    console.log('DB Connection is Successful!');
-  })
-  .catch((err) => {
-    console.error('Error during DB Connection', err);
-  });
+// DB 연결 함수 (요청 시 연결)
+async function initializeDB() {
+  if (!AppDataSource.isInitialized) {
+    try {
+      await AppDataSource.initialize();
+      console.log('DB Connection is Successful!');
+    } catch (err) {
+      console.error('Error during DB Connection', err);
+      throw err;
+    }
+  }
+}
 
 // Express
 const app = express();
@@ -78,6 +82,17 @@ configurePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
+// DB 연결 미들웨어
+app.use(async (req, res, next) => {
+  try {
+    await initializeDB();
+    next();
+  } catch (error) {
+    console.error('DB initialization failed:', error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
+
 // Routers
 app.use('/admin', adminRouter);
 app.use('/posts', postsRouter);
@@ -88,11 +103,39 @@ app.get('/', (req, res) => {
   res.status(200).send('Welcome to My Server!');
 });
 
+// Health check
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    environment: process.env.NODE_ENV,
+    database: AppDataSource.isInitialized ? 'Connected' : 'Not Connected',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Environment check (개발용 - 프로덕션에서는 제거 권장)
+app.get('/env-check', (req, res) => {
+  if (isProdMode) {
+    return res.status(403).json({ error: 'Access denied in production' });
+  }
+  res.status(200).json({
+    NODE_ENV: process.env.NODE_ENV,
+    DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not Set',
+    COOKIE_SECRET: process.env.COOKIE_SECRET ? 'Set' : 'Not Set',
+    SUPABASE_URL: process.env.SUPABASE_URL ? 'Set' : 'Not Set',
+  });
+});
+
 // Error Handler
 app.use(notFoundErrorHandler);
 app.use(errorHandler);
 
-// Server
-app.listen(REAL_SETTING.port, () => {
-  console.log(`server is running on ${REAL_SETTING.port}`);
-});
+// Export the Express app for Vercel
+export default app;
+
+// Server (로컬 개발용)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(REAL_SETTING.port, () => {
+    console.log(`server is running on ${REAL_SETTING.port}`);
+  });
+}

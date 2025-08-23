@@ -1,14 +1,20 @@
 {
   "name": "euroameri-car-back",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "repository": "https://github.com/kanghyun98/euroameri-car-back.git",
   "author": "kanghyun98 <lkh981107@gmail.com>",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register --files ./src/index.ts",
-    "start": "NODE_ENV=production pm2 start ts-node -- --type-check -r tsconfig-paths/register --files ./src/index.ts && pm2 monit"
+    "build": "tsc && tsc-alias",
+    "start": "NODE_ENV=production node dist/index.js",
+    "start:pm2": "NODE_ENV=production pm2 start dist/index.js && pm2 monit",
+    "vercel-build": "tsc && tsc-alias",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.56.0",
     "axios": "0.27.2",
     "bcrypt": "5.0.1",
     "cookie-parser": "1.4.6",
@@ -22,6 +28,7 @@
     "mysql2": "2.3.3",
     "passport": "0.5",
     "passport-local": "1.0.0",
+    "pg": "^8.11.3",
     "reflect-metadata": "0.1.13",
     "typeorm": "0.3.7"
   },
@@ -36,6 +43,7 @@
     "@types/node": "18.7.8",
     "@types/passport": "1.0.10",
     "@types/passport-local": "1.0.34",
+    "@types/pg": "^8.10.9",
     "@typescript-eslint/eslint-plugin": "5.33.1",
     "@typescript-eslint/parser": "5.33.1",
     "eslint": "8.22.0",
@@ -46,6 +54,7 @@
     "nodemon": "2.0.19",
     "prettier": "2.7.1",
     "ts-node": "10.9.1",
+    "tsc-alias": "^1.8.8",
     "tsconfig-paths": "4.1.0",
     "typescript": "4.7.4"
   }

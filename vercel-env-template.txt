@@ -1,0 +1,21 @@
+# Vercel 환경변수 설정 템플릿
+# 이 값들을 Vercel Dashboard > Settings > Environment Variables에 추가하세요
+
+# 필수 환경변수
+NODE_ENV=production
+DATABASE_URL=postgresql://postgres:[YOUR-DB-PASSWORD]@db.rlecgghggceoslgjjzaa.supabase.co:5432/postgres
+COOKIE_SECRET=your-super-secret-cookie-key-minimum-32-characters
+
+# Supabase 설정 (이미 코드에 기본값 설정됨, 오버라이드 필요시에만 설정)
+SUPABASE_URL=https://rlecgghggceoslgjjzaa.supabase.co
+SUPABASE_ANON_KEY=sb_publishable_8L3Q-zAbJbNsvcUHkhPg9A_DKjyDC-Z
+SUPABASE_SERVICE_KEY=sb_secret_q4gDth2tWoB8poHD8ryZWw_Qp30RT18
+
+# 선택사항 (기본값 사용 가능)
+CLIENT_URL=https://your-frontend-domain.com
+COOKIE_DOMAIN=.vercel.app
+
+# 설정 방법:
+# 1. DATABASE_URL에서 [YOUR-DB-PASSWORD]를 Supabase DB 비밀번호로 교체
+# 2. COOKIE_SECRET을 32자 이상의 랜덤 문자열로 설정
+# 3. CLIENT_URL을 실제 프론트엔드 도메인으로 설정
