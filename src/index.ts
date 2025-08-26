@@ -36,8 +36,8 @@ const app = express();
 
 // Security
 if (isProdMode) {
-  app.use(hpp());
-  app.use(helmet());
+  app.use(hpp() as any);
+  app.use(helmet() as any);
   app.enable('trust proxy');
 }
 
@@ -57,26 +57,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Cookie & Session
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET) as any);
 app.use(
   session({
     saveUninitialized: false,
     resave: false,
     secret: process.env.COOKIE_SECRET!,
-    proxy: true,
+    proxy: isProdMode,
     cookie: {
       httpOnly: true,
       secure: isProdMode,
       domain: isProdMode ? PROD_SETTING.domain : undefined,
-      sameSite: 'none',
+      sameSite: isProdMode ? 'none' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000, // 24시간
     },
-  }),
+  }) as any,
 );
 
 // Passport
 configurePassport();
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize() as any);
+app.use(passport.session() as any);
 
 // Routers
 app.use('/admin', adminRouter);

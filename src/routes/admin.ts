@@ -1,10 +1,22 @@
 import express from 'express';
 import passport from 'passport';
-
-import { BadRequestError } from '@errors/customErrors';
 import { isLoggedIn, isNotLoggedIn } from './middleware';
 
 const router = express.Router();
+
+// 인증 상태 확인
+router.get('/check', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.status(200).json({
+      isAuthenticated: true,
+      admin: req.user,
+    });
+  }
+
+  return res.status(200).json({
+    isAuthenticated: false,
+  });
+});
 
 router.post('/login', isNotLoggedIn, async (req, res, next) => {
   passport.authenticate('local', (isError, data, errInfo) => {
@@ -29,15 +41,18 @@ router.post('/login', isNotLoggedIn, async (req, res, next) => {
 router.post('/logout', isLoggedIn, (req, res) => {
   req.logout((err) => {
     if (err) {
-      throw new BadRequestError(err);
+      return res.status(400).json({ msg: 'Logout Error' });
     }
+
+    req.session.destroy((sessionErr) => {
+      if (sessionErr) {
+        return res.status(400).json({ msg: 'Session Destroy Error' });
+      }
+
+      res.clearCookie('connect.sid');
+      return res.status(200).json({ msg: 'Logout Success' });
+    });
   });
-  req.session.destroy((err) => {
-    if (err) {
-      throw new BadRequestError(err);
-    }
-  });
-  res.send('ok');
 });
 
 export default router;
