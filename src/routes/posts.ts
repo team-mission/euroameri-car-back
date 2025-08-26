@@ -3,11 +3,13 @@ import express, { Request, Response } from 'express';
 import wrapAsync from '@utils/wrapAsync';
 import { getPostList } from '@database/controllers/post';
 import { BadRequestError } from '@errors/customErrors';
+import { checkUserType } from './middleware';
 
 const router = express.Router();
 
 router.get(
   '/',
+  checkUserType,
   wrapAsync(async (req: Request, res: Response) => {
     const { page = '1', display = '10' } = req.query;
     const [displayNum, pageNum] = [Number(display), Number(page)];
