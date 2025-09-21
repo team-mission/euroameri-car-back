@@ -41,37 +41,23 @@ router.post('/logout', isLoggedIn, (req, res) => {
   console.log('Logout attempt for user:', req.user);
   console.log('Session before logout:', req.session);
 
-  // Passport.js 로그아웃
-  req.logout((err) => {
+  // 세션 제거
+  req.session.destroy((err) => {
     if (err) {
-      console.error('Passport logout error:', err);
-      return res.status(500).json({ msg: '로그아웃 중 오류가 발생했습니다.' });
+      console.error('Session destroy error:', err);
+      return res.status(500).json({ msg: '세션 제거 실패' });
     }
 
-    console.log('Passport logout successful');
-
-    // 세션 제거
-    req.session.destroy((sessionErr) => {
-      if (sessionErr) {
-        console.error('Session Destroy Error:', sessionErr);
-        return res
-          .status(500)
-          .json({ msg: '세션 제거 중 오류가 발생했습니다.' });
-      }
-
-      console.log('Session destroyed successfully');
-
-      // 쿠키 삭제
-      res.clearCookie('euroameri.sid', {
-        path: '/',
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      });
-
-      console.log('Cookie cleared, logout complete');
-      return res.status(200).json({ msg: '로그아웃 성공' });
+    // 쿠키 삭제
+    res.clearCookie('euroameri.sid', {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     });
+
+    console.log('Logout successful');
+    return res.status(200).json({ msg: '로그아웃 성공' });
   });
 });
 
