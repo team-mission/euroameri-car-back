@@ -7,37 +7,72 @@ import { isLoggedIn, isNotLoggedIn } from './middleware';
 const router = express.Router();
 
 router.post('/login', isNotLoggedIn, async (req, res, next) => {
+  console.log('Login attempt with data:', {
+    uid: req.body.uid,
+    password: req.body.password ? '***' : 'undefined',
+  });
+
   passport.authenticate('local', (isError, data, errInfo) => {
     if (isError) {
+      console.error('Passport authentication error:', isError);
       return next(isError);
     }
 
     if (errInfo) {
-      return res.status(401).send({ msg: errInfo.message });
+      console.log('Authentication failed:', errInfo.message);
+      return res.status(401).json({ msg: errInfo.message });
     }
+
+    console.log('Authentication successful, user:', data);
 
     return req.login(data, async (loginError) => {
       if (loginError) {
+        console.error('Login error:', loginError);
         return next(loginError);
       }
 
-      return res.status(200).send();
+      console.log('Login successful, session created');
+      return res.status(200).json({ msg: '로그인 성공' });
     });
   })(req, res, next);
 });
 
 router.post('/logout', isLoggedIn, (req, res) => {
+  console.log('Logout attempt for user:', req.user);
+  console.log('Session before logout:', req.session);
+
+  // Passport.js 로그아웃
   req.logout((err) => {
     if (err) {
-      throw new BadRequestError(err);
+      console.error('Passport logout error:', err);
+      return res.status(500).json({ msg: '로그아웃 중 오류가 발생했습니다.' });
     }
+
+    console.log('Passport logout successful');
+
+    // 세션 제거
+    req.session.destroy((sessionErr) => {
+      if (sessionErr) {
+        console.error('Session Destroy Error:', sessionErr);
+        return res
+          .status(500)
+          .json({ msg: '세션 제거 중 오류가 발생했습니다.' });
+      }
+
+      console.log('Session destroyed successfully');
+
+      // 쿠키 삭제
+      res.clearCookie('euroameri.sid', {
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      });
+
+      console.log('Cookie cleared, logout complete');
+      return res.status(200).json({ msg: '로그아웃 성공' });
+    });
   });
-  req.session.destroy((err) => {
-    if (err) {
-      throw new BadRequestError(err);
-    }
-  });
-  res.send('ok');
 });
 
 export default router;

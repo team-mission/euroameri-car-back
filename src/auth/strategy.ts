@@ -10,19 +10,24 @@ const LocalStrategy = () => {
         usernameField: 'uid',
         passwordField: 'password',
       },
-      async (uid, password, done) => {
-        // 아이디 조회
-        const admin = await getAdminDataByUid(uid);
-        if (!admin) {
-          return done(null, false, { message: 'Unauthorized' });
-        }
+      async (username, password, done) => {
+        try {
+          // 아이디 조회 (username을 uid로 사용)
+          const admin = await getAdminDataByUid(username);
+          if (!admin) {
+            return done(null, false, { message: 'Invalid credentials' });
+          }
 
-        // 비밀번호 확인
-        if (password !== admin.password) {
-          return done(null, false, { message: 'Unauthorized' });
-        }
+          // 비밀번호 확인 (평문 비교)
+          if (password !== admin.password) {
+            return done(null, false, { message: 'Invalid credentials' });
+          }
 
-        return done(null, admin);
+          return done(null, admin);
+        } catch (error) {
+          console.error('Auth Error:', error);
+          return done(error);
+        }
       },
     ),
   );
